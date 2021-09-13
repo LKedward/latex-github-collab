@@ -1,0 +1,87 @@
+\documentclass[]{article}
+
+\title{Collaborative LaTeX Writing using Git and Github Actions}
+\author{Laurence Kedward}
+
+\usepackage{listings}
+\usepackage[colorlinks,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
+
+\begin{document}
+
+\maketitle
+
+
+Repository available at: \url{https://github.com/LKedward/latex-github-collab}
+
+\section{Compiling Locally}
+
+\subsection{Prerequisites}
+
+Compiling locally is possible with any LaTeX distribution; the github actions workflow running on Ubuntu 20.04 uses the following packages (all installable via `apt`):
+
+\subsection*{Mandatory}
+\begin{itemize}
+	
+	\item \texttt{texlive-latex-recommended}
+	\item \texttt{texlive-latex-extra}
+	
+\end{itemize}
+
+\subsection*{Optional}
+\begin{itemize}
+	
+	\item \texttt{texlive-latex-utils} \quad (for \texttt{texcount})
+	\item \texttt{rubber} \quad (for using the \texttt{Makefile})
+	\item \texttt{perl} \quad (for \texttt{texcount} and \texttt{latexdiff})
+	\item \texttt{latexdiff}
+	
+\end{itemize}
+
+
+\subsection{Makefile}
+
+For convenience a Makefile is included which relies on the [rubber](https://gitlab.com/latex-rubber/rubber/) LaTeX wrapper:
+
+
+\begin{center}
+	\begin{lstlisting}[language=Bash,morekeywords={make}]
+	$ make             # generate paper.pdf
+	$ make clean       # cleanup
+	$ make spellcheck  # run codespell
+	$ make count       # run TexCount
+	$ make diff        # run latexdiff with master
+	\end{lstlisting}
+\end{center}
+
+
+\section{License: MIT}
+
+The Makefile and Github actions workflow are licensed under the MIT license
+
+\begin{quote}
+	MIT License
+	
+	Copyright (c) 2021 Laurence Kedward
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+\end{quote}
+
+
+
+\end{document}

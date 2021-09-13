@@ -1,0 +1,10 @@
+tex/*.aux
+tex/*.bbl
+tex/*.blg
+tex/*.log
+tex/*.out
+tex/*.pdf
+tex/*.synctex.gz
+tex/*.txt
+tex/*.eps
+tex/paper-diff*

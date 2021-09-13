@@ -1,0 +1,126 @@
+# Laurence Kedward 2021
+# Licensed for use under the MIT license
+# (See LICENSE file)
+
+name: CI
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+env:
+  APT_DEPS: texlive-latex-recommended texlive-latex-extra texlive-extra-utils latexdiff perl rubber
+  REPO_URL: https://github.com/LKedward/latex-github-collab
+  TEXTIDOTE_URL: https://github.com/sylvainhalle/textidote/releases/download/v0.8.2/textidote_0.8.2_all.deb
+
+jobs:
+  SpellCheck:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Install Ubuntu Dependencies
+      run: |
+        wget ${{ env.TEXTIDOTE_URL }}
+        sudo apt-get install -y ./textidote*.deb
+        sudo pip3 install codespell
+
+    - name: Run spell check
+      run: make spellcheck
+
+  Build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - run: |
+        git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+      
+    - name: Install Ubuntu Dependencies
+      run: sudo apt install ${{ env.APT_DEPS }}
+
+    - name: Compile paper
+      run : make
+
+    - name: Run TexCount
+      id: texcount
+      run : |
+        TEXCOUNT_OUT=$(make count)
+        TEXCOUNT_OUT="${TEXCOUNT_OUT//$'\n'/'%0A'}"
+        echo "::set-output name=output::$TEXCOUNT_OUT"
+    
+    - name: Run latexdiff for PR
+      if: github.event_name == 'pull_request'
+      run: make diff
+    
+    - name: Checkout previews branch
+      uses: actions/checkout@v2
+      with:
+        ref: previews
+        path: previews
+
+    - name: Define preview directory (PRs)
+      if: github.event_name == 'pull_request'
+      run: echo "BUILD_DIR=pr-${{github.event.number}}" >> $GITHUB_ENV
+
+    - name: Define preview directory
+      if: github.event_name != 'pull_request'
+      run: echo "BUILD_DIR=master" >> $GITHUB_ENV
+
+    - name: Collect pdf previews for upload
+      run: |
+        mkdir -p previews/${{env.BUILD_DIR}}
+        cp tex/paper.pdf previews/${{env.BUILD_DIR}}/
+        test -f tex/master.pdf && cp tex/master.pdf previews/${{env.BUILD_DIR}}/paper-diffmaster.pdf || true
+
+    - name: Upload paper preview
+      uses: EndBug/add-and-commit@v7
+      with:
+        cwd: previews
+        add: '${{env.BUILD_DIR}}'
+        branch: previews
+        message: 'Upload pdf preview for ${{env.BUILD_DIR}}'
+
+    - name: Get Time
+      if: github.event_name == 'pull_request'
+      id: time
+      uses: nanzm/get-time-action@v1.1
+      with:
+        timeZone: 0
+        format: 'DD-MM-YYYY HH:mm:ss'
+
+    - name: Find previous bot comment
+      if: github.event_name == 'pull_request'
+      uses: peter-evans/find-comment@v1
+      id: fc
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Preview
+
+    - name: Create PR comment
+      if: github.event_name == 'pull_request'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        issue-number: ${{github.event.number}}
+        body: |
+          Preview this branch rendered at <${{env.REPO_URL}}/blob/previews/${{env.BUILD_DIR}}/paper.pdf>
+          Preview the latexdiff rendered at <${{env.REPO_URL}}/blob/previews/${{env.BUILD_DIR}}/paper-diffmaster.pdf>
+          <details>
+          <summary>Click to view TexCount output</summary>
+
+          ```
+          ${{ steps.texcount.outputs.output }}
+          ```
+          </details>
+
+          Last updated: ${{ steps.time.outputs.time }} UTC for ${{ github.event.pull_request.head.sha }}
+        edit-mode: replace
