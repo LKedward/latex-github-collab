@@ -2,16 +2,11 @@
 
 [![CI](https://github.com/LKedward/latex-github-collab/actions/workflows/CI.yml/badge.svg)](https://github.com/LKedward/latex-github-collab/actions/workflows/CI.yml) [[__View Paper Preview__](https://github.com/LKedward/latex-github-collab/blob/previews/master/paper.pdf)]
 
-A Github repository template for writing LaTeX documents collaboratively with rendering in Github actions.
+A Github repository template for writing LaTeX documents collaboratively with automatic rendering using Github actions.
 
 - Renders the paper on every push to master
 - Renders the paper for pull requests, including latex-diff with master
 - Calculates document word count for pull requests using texcount
-
-__Repository contents:__
-- [`tex/`](./tex/) - all sources and resources for the article
-- [`tex/paper.tex`](./tex/paper.tex) - main source file for the article
-
 
 ## Compiling Locally
 

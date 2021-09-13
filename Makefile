@@ -13,7 +13,7 @@ clean:
 count:
 	texcount $(SRC)	
 
-diff: DIFF_FILE_CMD=$(shell latexdiff-vc tex/paper.tex -r origin/master --force|grep Generated|cut -d\  -f4)
+diff: DIFF_FILE_CMD=$(shell latexdiff-vc tex/paper.tex -r origin/main --force|grep Generated|cut -d\  -f4)
 
 diff:
 	rubber --pdf --into tex $(DIFF_FILE_CMD)

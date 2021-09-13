@@ -115,7 +115,7 @@ jobs:
         issue-number: ${{github.event.number}}
         body: |
           Preview this branch rendered at <${{env.REPO_URL}}/blob/previews/${{env.BUILD_DIR}}/paper.pdf>
-          Preview the latexdiff rendered at <${{env.REPO_URL}}/blob/previews/${{env.BUILD_DIR}}/paper-diffmaster.pdf>
+          Preview the latexdiff rendered at <${{env.REPO_URL}}/blob/previews/${{env.BUILD_DIR}}/paper-diffmain.pdf>
           <details>
           <summary>Click to view TexCount output</summary>
 
