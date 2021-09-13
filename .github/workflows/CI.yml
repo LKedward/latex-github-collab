@@ -80,7 +80,7 @@ jobs:
       run: |
         mkdir -p previews/${{env.BUILD_DIR}}
         cp tex/paper.pdf previews/${{env.BUILD_DIR}}/
-        test -f tex/master.pdf && cp tex/master.pdf previews/${{env.BUILD_DIR}}/paper-diffmaster.pdf || true
+        test -f tex/main.pdf && cp tex/main.pdf previews/${{env.BUILD_DIR}}/paper-diffmain.pdf || true
 
     - name: Upload paper preview
       uses: EndBug/add-and-commit@v7
