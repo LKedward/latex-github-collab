@@ -4,7 +4,7 @@
 
 name: CI
 
-on: 
+on:
   push:
     branches:
       - main
@@ -22,8 +22,8 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
-    
+      uses: actions/checkout@v3
+
     - name: Install Ubuntu Dependencies
       run: |
         wget ${{ env.TEXTIDOTE_URL }}
@@ -38,11 +38,11 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-      
+
     - name: Install Ubuntu Dependencies
       run: |
         sudo apt-get update
@@ -56,14 +56,14 @@ jobs:
       run : |
         TEXCOUNT_OUT=$(make count)
         TEXCOUNT_OUT="${TEXCOUNT_OUT//$'\n'/'%0A'}"
-        echo "::set-output name=output::$TEXCOUNT_OUT"
-    
+        echo "output=$TEXCOUNT_OUT" >> $GITHUB_OUTPUT
+
     - name: Run latexdiff for PR
       if: github.event_name == 'pull_request'
       run: make diff
-    
+
     - name: Checkout previews branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: previews
         path: previews
@@ -83,11 +83,11 @@ jobs:
         test -f tex/main.pdf && cp tex/main.pdf previews/${{env.BUILD_DIR}}/paper-diffmain.pdf || true
 
     - name: Upload paper preview
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         cwd: previews
         add: '${{env.BUILD_DIR}}'
-        branch: previews
+        new_branch: previews
         message: 'Upload pdf preview for ${{env.BUILD_DIR}}'
 
     - name: Get Time
@@ -100,7 +100,7 @@ jobs:
 
     - name: Find previous bot comment
       if: github.event_name == 'pull_request'
-      uses: peter-evans/find-comment@v1
+      uses: peter-evans/find-comment@v2
       id: fc
       with:
         issue-number: ${{ github.event.pull_request.number }}
@@ -109,7 +109,7 @@ jobs:
 
     - name: Create PR comment
       if: github.event_name == 'pull_request'
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
         comment-id: ${{ steps.fc.outputs.comment-id }}
         issue-number: ${{github.event.number}}
